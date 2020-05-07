@@ -1,0 +1,41 @@
+version: '3.3'
+services:
+  server:
+    container_name: .
+    image: golang-graphql-microservice
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8009:8009"
+    restart: always
+    networks:
+      - private-net
+    depends_on:
+      - mongodb
+  mongodb:
+    image: mongo:latest
+    container_name: 'mongo-container'
+    environment:
+      - MONGO_INITDB_DATABASE=my-mongo-db1
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+    volumes:
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+#      - ./mongo-volume:/data/db
+    ports:
+      - '27017-27019:27017-27019'
+#  client:
+#    container_name: client
+#    image: client
+#    build:
+#      context: ./client
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8009:8009"
+#    restart: always
+#    networks:
+#      - private-net
+networks:
+  private-net:
+    driver: bridge
